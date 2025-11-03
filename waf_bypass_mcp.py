@@ -2,10 +2,11 @@
 WAF Bypass MCP Server
 A Model Context Protocol server for AI-powered WAF bypass testing and payload generation.
 
-Inspired by research on using AI to bypass AI-powered security systems.
-Built for automated penetration testing workflows.
+Inspired by research from esakkiammal-v on using AI to bypass AI-powered security systems.
+https://infosecwriteups.com/how-i-made-chatgpt-my-personal-hacking-assistant-and-broke-their-ai-powered-security-ee37d4a725c2
 
-Author: Rafael Bezerra (rafabez)
+Built for automated penetration testing workflows.
+Developed by InterzoneSec Research Team
 License: MIT
 """
 

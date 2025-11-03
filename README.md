@@ -4,6 +4,10 @@
 
 An advanced Model Context Protocol (MCP) server that leverages AI intelligence to automatically generate, test, and adapt attack payloads for bypassing Web Application Firewalls. Built for security researchers and penetration testers conducting authorized security assessments.
 
+**Inspired by**: [esakkiammal-v's research](https://infosecwriteups.com/how-i-made-chatgpt-my-personal-hacking-assistant-and-broke-their-ai-powered-security-ee37d4a725c2) on using AI to bypass AI-powered WAFs
+
+**Developed by**: InterzoneSec Research Team
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
@@ -153,6 +157,8 @@ Add to your MCP client configuration (e.g., `~/.config/windsurf/mcp_config.json`
   }
 }
 ```
+
+**Note**: This tool is currently in private development for internal lab use by InterzoneSec.
 
 **For Windsurf/Cascade:**
 - Open Settings → MCP Servers
@@ -546,7 +552,7 @@ Contributions are welcome! Areas for improvement:
 ### Development Setup
 
 ```bash
-git clone https://github.com/rafabez/WAF-Bypass-MCP.git
+git clone https://github.com/interzonesec/WAF-Bypass-MCP.git
 cd WAF-Bypass-MCP
 python -m venv venv
 source venv/bin/activate  # or `venv\Scripts\activate` on Windows
@@ -565,7 +571,7 @@ python -m pytest tests/
 
 This project is inspired by cutting-edge research on AI-vs-AI security:
 
-1. **"Using AI to Bypass AI-Powered WAFs"** - Security research demonstrating semantic obfuscation
+1. **[How I Made ChatGPT My Personal Hacking Assistant](https://infosecwriteups.com/how-i-made-chatgpt-my-personal-hacking-assistant-and-broke-their-ai-powered-security-ee37d4a725c2)** by esakkiammal-v - Original research demonstrating AI-powered WAF bypass
 2. **"Adaptive Attack Generation"** - Machine learning for payload evolution
 3. **"Natural Language Adversarial Examples"** - NLP techniques for evasion
 
@@ -637,7 +643,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2025 Rafael Bezerra (rafabez)
+Copyright (c) 2025 InterzoneSec Research Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -660,28 +666,28 @@ SOFTWARE.
 
 ---
 
-## 👤 Author
+## 👥 Development Team
 
-**Rafael Bezerra** ([@rafabez](https://github.com/rafabez))
+**InterzoneSec Research Team**
 
-Security researcher and penetration tester specializing in web application security and AI-assisted offensive security tools.
+Security researchers and penetration testers specializing in web application security and AI-assisted offensive security tools.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Inspired by the research article "How I Made ChatGPT My Personal Hacking Assistant"
+- **Primary Inspiration**: [esakkiammal-v](https://www.linkedin.com/in/esakkiammal-v/) for the groundbreaking research article ["How I Made ChatGPT My Personal Hacking Assistant (And Broke Their 'AI-Powered' Security)"](https://infosecwriteups.com/how-i-made-chatgpt-my-personal-hacking-assistant-and-broke-their-ai-powered-security-ee37d4a725c2)
 - Thanks to the MCP community for the excellent protocol
-- Built with Claude AI assistance
+- Built with Claude AI assistance via Windsurf IDE
 - Special thanks to all security researchers advancing the field
 
 ---
 
 ## 📞 Contact & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/rafabez/WAF-Bypass-MCP/issues)
-- **Discussions**: [Join the community](https://github.com/rafabez/WAF-Bypass-MCP/discussions)
-- **Twitter**: [@rafabez](https://twitter.com/rafabez)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/interzonesec/WAF-Bypass-MCP/issues)
+- **Discussions**: [Join the community](https://github.com/interzonesec/WAF-Bypass-MCP/discussions)
+- **Organization**: InterzoneSec
 
 ---
 

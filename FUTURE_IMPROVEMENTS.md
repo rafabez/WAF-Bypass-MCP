@@ -367,4 +367,4 @@ Interested in implementing any of these features?
 **Last Updated**: 2025-01-04  
 **Next Review**: 2025-04-01
 
-For discussions about these features, visit: [GitHub Discussions](https://github.com/rafabez/WAF-Bypass-MCP/discussions)
+For discussions about these features, visit: [GitHub Discussions](https://github.com/interzonesec/WAF-Bypass-MCP/discussions)
