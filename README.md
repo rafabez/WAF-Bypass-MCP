@@ -123,7 +123,7 @@ WAF Bypass MCP uses **AI-native techniques** to:
 ## 📋 Prerequisites
 
 - **Python 3.8+**
-- **MCP-compatible IDE** (Windsurf, Cursor, or any MCP client)
+- **MCP-compatible IDE**: Windsurf, Cursor, VS Code (with MCP extension), or any MCP client
 - **Target Authorization** (only test systems you have permission to test)
 
 ---
@@ -133,39 +133,100 @@ WAF Bypass MCP uses **AI-native techniques** to:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/rafabez/WAF-Bypass-MCP.git
+git clone https://github.com/interzonesec/WAF-Bypass-MCP.git
 cd WAF-Bypass-MCP
 ```
 
-### 2. Install Dependencies
+### 2. Create Virtual Environment
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+
+# On Windows:
+# venv\Scripts\activate
+```
+
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure MCP Client
+### 4. Configure MCP Client
 
-Add to your MCP client configuration (e.g., `~/.config/windsurf/mcp_config.json` or Cursor settings):
+**Note**: This tool is currently in private development for internal lab use by InterzoneSec.
+
+#### For Windsurf/Cascade
+
+1. Open Settings → MCP Servers (or edit `~/.config/windsurf/mcp_config.json`)
+2. Add the following configuration:
 
 ```json
 {
   "mcpServers": {
     "waf-bypass-mcp": {
-      "command": "python",
+      "command": "/absolute/path/to/WAF-Bypass-MCP/venv/bin/python",
       "args": ["/absolute/path/to/WAF-Bypass-MCP/waf_bypass_mcp.py"]
     }
   }
 }
 ```
 
-**Note**: This tool is currently in private development for internal lab use by InterzoneSec.
+3. Restart the IDE
 
-**For Windsurf/Cascade:**
-- Open Settings → MCP Servers
-- Add new server with the above configuration
-- Restart the IDE
+#### For Cursor IDE
 
-### 4. Verify Installation
+1. Open Settings (Cmd/Ctrl + ,)
+2. Search for "MCP" or edit `~/.cursor/mcp_config.json`
+3. Add the configuration:
+
+```json
+{
+  "mcpServers": {
+    "waf-bypass-mcp": {
+      "command": "/absolute/path/to/WAF-Bypass-MCP/venv/bin/python",
+      "args": ["/absolute/path/to/WAF-Bypass-MCP/waf_bypass_mcp.py"]
+    }
+  }
+}
+```
+
+4. Restart Cursor
+
+#### For VS Code (with Cline/MCP Extension)
+
+1. Install the MCP extension for VS Code
+2. Edit settings: `~/.vscode/mcp_settings.json` or through VS Code settings UI
+3. Add the configuration:
+
+```json
+{
+  "mcpServers": {
+    "waf-bypass-mcp": {
+      "command": "/absolute/path/to/WAF-Bypass-MCP/venv/bin/python",
+      "args": ["/absolute/path/to/WAF-Bypass-MCP/waf_bypass_mcp.py"]
+    }
+  }
+}
+```
+
+4. Reload VS Code
+
+#### Configuration Notes
+
+- **Replace `/absolute/path/to/WAF-Bypass-MCP`** with your actual installation path
+- **Windows users**: Use forward slashes or escaped backslashes in paths
+  - Example: `C:/Users/YourName/WAF-Bypass-MCP/venv/Scripts/python.exe`
+- **Virtual environment**: Always use the Python executable from your venv
+  - Linux/Mac: `venv/bin/python`
+  - Windows: `venv\Scripts\python.exe`
+
+### 5. Verify Installation
 
 In your IDE chat, ask:
 ```
@@ -173,6 +234,12 @@ In your IDE chat, ask:
 ```
 
 You should see the MCP tools loaded and ready to use.
+
+If the server doesn't load:
+- Check the Python path points to your venv
+- Verify the waf_bypass_mcp.py path is correct
+- Check IDE logs for MCP server errors
+- Ensure all dependencies are installed in the venv
 
 ---
 
@@ -552,11 +619,20 @@ Contributions are welcome! Areas for improvement:
 ### Development Setup
 
 ```bash
+# Clone repository
 git clone https://github.com/interzonesec/WAF-Bypass-MCP.git
 cd WAF-Bypass-MCP
+
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+source venv/bin/activate  # Linux/Mac
+# OR
+# venv\Scripts\activate  # Windows
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Configure MCP in your IDE (see Installation section above)
 ```
 
 ### Running Tests
@@ -608,14 +684,23 @@ See [FUTURE_IMPROVEMENTS.md](FUTURE_IMPROVEMENTS.md) for detailed roadmap.
 
 **Issue: MCP server not loading**
 ```bash
+# Activate virtual environment first
+source venv/bin/activate  # Linux/Mac
+# OR venv\Scripts\activate on Windows
+
 # Check Python version
 python --version  # Should be 3.8+
 
-# Verify dependencies
+# Verify dependencies installed in venv
 pip list | grep fastmcp
 
 # Test server manually
 python waf_bypass_mcp.py
+
+# Check IDE MCP logs
+# Windsurf: Help → Toggle Developer Tools → Console
+# Cursor: View → Output → Select "MCP"
+# VS Code: View → Output → Select "MCP Server"
 ```
 
 **Issue: Connection errors to target**
