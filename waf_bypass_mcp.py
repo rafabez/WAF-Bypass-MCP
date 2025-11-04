@@ -619,10 +619,20 @@ def analyze_target_and_recommend(
     """
     Analyze reconnaissance data and recommend optimal attack vectors.
     
-    This tool helps the AI assistant analyze target information and suggest
-    the most effective attack types based on technology stack, endpoints,
-    and observed behavior. The AI can then use this analysis to prioritize
-    testing.
+    ⚠️ NOTE: This tool provides BASELINE recommendations using keyword detection.
+    The AI assistant should use its own reasoning to refine and enhance these
+    suggestions based on deeper context analysis.
+    
+    This tool is most useful for:
+    - Quick initial assessment
+    - Structured recon data with explicit technology mentions
+    - Baseline suggestions that the AI can improve upon
+    
+    The AI assistant is encouraged to:
+    - Add attacks not detected by keywords
+    - Adjust confidence scores based on context
+    - Consider attack combinations and sequences
+    - Apply domain knowledge beyond simple pattern matching
     
     Args:
         target_url: Target endpoint URL
@@ -631,11 +641,11 @@ def analyze_target_and_recommend(
     
     Returns:
         Dictionary containing:
-        - analysis: Parsed recon data
-        - recommended_attacks: Prioritized list of attack types
+        - analysis: Parsed recon data (BASELINE - AI should enhance)
+        - recommended_attacks: Prioritized list (AI should refine)
         - reasoning: Why each attack type was recommended
         - suggested_payloads: Specific payload suggestions
-        - execution_plan: Step-by-step testing plan
+        - execution_plan: Step-by-step testing plan (AI should optimize)
     """
     
     # This tool provides structure for the AI assistant to analyze
@@ -764,6 +774,16 @@ def analyze_target_and_recommend(
         analysis["auto_executed"] = True
     else:
         analysis["auto_executed"] = False
+    
+    # Add note for AI assistant
+    analysis["ai_note"] = (
+        "⚠️ These are BASELINE recommendations. As the AI assistant, you should:\n"
+        "1. Review and enhance these suggestions with your reasoning\n"
+        "2. Add attacks not detected by keyword matching\n"
+        "3. Adjust priorities based on deeper context analysis\n"
+        "4. Consider the full attack surface beyond simple patterns\n"
+        "Use this as a starting point, not a final decision."
+    )
     
     return analysis
 
