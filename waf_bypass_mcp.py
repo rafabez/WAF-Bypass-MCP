@@ -498,6 +498,118 @@ def get_waf_fingerprints() -> str:
     return json.dumps(fingerprints, indent=2)
 
 
+@mcp.tool()
+def comprehensive_waf_scan(
+    target_url: str,
+    parameter_name: str = "query",
+    method: str = "POST",
+    headers: Optional[Dict[str, str]] = None,
+    attack_types: Optional[List[str]] = None,
+    payloads_per_attack: int = 5
+) -> Dict[str, Any]:
+    """
+    Comprehensive WAF bypass testing across ALL attack types.
+    
+    This tool automatically tests multiple attack vectors without requiring
+    the user to specify a single attack type. Perfect for reconnaissance
+    and discovering which attack vectors work against a target.
+    
+    Args:
+        target_url: Target endpoint URL
+        parameter_name: Parameter/key to inject payloads into
+        method: HTTP method (GET, POST, PUT, etc.)
+        headers: Custom HTTP headers
+        attack_types: List of attack types to test (default: all)
+        payloads_per_attack: Number of payloads to test per attack type
+    
+    Returns:
+        Dictionary containing:
+        - results_by_attack_type: Results grouped by attack type
+        - total_attacks_tested: Total number of attack types tested
+        - successful_attack_types: List of attack types that bypassed WAF
+        - overall_success_rate: Percentage of successful bypasses
+        - recommendations: Next steps based on results
+    """
+    
+    # Default to all attack types if not specified
+    if attack_types is None:
+        attack_types = [
+            "sql_injection",
+            "xss",
+            "path_traversal",
+            "command_injection",
+            "xxe",
+            "ssrf",
+            "ldap_injection",
+            "nosql_injection"
+        ]
+    
+    results = {
+        "target_url": target_url,
+        "results_by_attack_type": {},
+        "total_attacks_tested": len(attack_types),
+        "successful_attack_types": [],
+        "total_payloads_tested": 0,
+        "total_bypasses": 0,
+        "overall_success_rate": 0.0,
+        "recommendations": []
+    }
+    
+    # Test each attack type
+    for attack_type in attack_types:
+        print(f"[*] Testing {attack_type}...")
+        
+        attack_results = batch_test_attack_surface(
+            target_url=target_url,
+            attack_type=attack_type,
+            parameter_name=parameter_name,
+            method=method,
+            headers=headers,
+            payload_count=payloads_per_attack
+        )
+        
+        results["results_by_attack_type"][attack_type] = attack_results
+        results["total_payloads_tested"] += attack_results["total_payloads_tested"]
+        
+        # Track successful attack types
+        if attack_results["successful_bypasses"]:
+            results["successful_attack_types"].append(attack_type)
+            results["total_bypasses"] += len(attack_results["successful_bypasses"])
+    
+    # Calculate overall success rate
+    if results["total_payloads_tested"] > 0:
+        results["overall_success_rate"] = (
+            results["total_bypasses"] / results["total_payloads_tested"]
+        ) * 100
+    
+    # Generate recommendations
+    if results["successful_attack_types"]:
+        results["recommendations"].append(
+            f"✅ WAF is vulnerable to: {', '.join(results['successful_attack_types'])}"
+        )
+        results["recommendations"].append(
+            "🎯 Focus deeper testing on successful attack types"
+        )
+        results["recommendations"].append(
+            "📊 Use adaptive learning to improve successful payloads"
+        )
+    else:
+        results["recommendations"].append(
+            "⚠️ No bypasses found with initial payloads"
+        )
+        results["recommendations"].append(
+            "🔄 Try WAF fingerprinting to identify specific WAF vendor"
+        )
+        results["recommendations"].append(
+            "💡 Use adaptive learning to evolve payloads based on blocks"
+        )
+    
+    # Store results
+    storage.store_scan_results(target_url, results)
+    
+    return results
+
+
 @mcp.resource("payload-library://attack-templates")
 def get_attack_templates() -> str:
     """Returns attack payload templates for different scenarios."""
