@@ -610,6 +610,164 @@ def comprehensive_waf_scan(
     return results
 
 
+@mcp.tool()
+def analyze_target_and_recommend(
+    target_url: str,
+    recon_data: str,
+    auto_execute: bool = False
+) -> Dict[str, Any]:
+    """
+    Analyze reconnaissance data and recommend optimal attack vectors.
+    
+    This tool helps the AI assistant analyze target information and suggest
+    the most effective attack types based on technology stack, endpoints,
+    and observed behavior. The AI can then use this analysis to prioritize
+    testing.
+    
+    Args:
+        target_url: Target endpoint URL
+        recon_data: Reconnaissance information (technologies, behaviors, headers, etc.)
+        auto_execute: If True, automatically execute recommended tests
+    
+    Returns:
+        Dictionary containing:
+        - analysis: Parsed recon data
+        - recommended_attacks: Prioritized list of attack types
+        - reasoning: Why each attack type was recommended
+        - suggested_payloads: Specific payload suggestions
+        - execution_plan: Step-by-step testing plan
+    """
+    
+    # This tool provides structure for the AI assistant to analyze
+    # The actual analysis happens through the AI's reasoning
+    
+    analysis = {
+        "target_url": target_url,
+        "recon_summary": recon_data,
+        "detected_technologies": [],
+        "detected_waf": None,
+        "endpoint_type": None,
+        "recommended_attacks": [],
+        "reasoning": {},
+        "suggested_payloads": {},
+        "execution_plan": [],
+        "confidence_scores": {}
+    }
+    
+    # Parse common technology indicators from recon data
+    recon_lower = recon_data.lower()
+    
+    # Database detection
+    if "mongodb" in recon_lower or "mongo" in recon_lower:
+        analysis["detected_technologies"].append("MongoDB")
+        analysis["recommended_attacks"].append("nosql_injection")
+        analysis["reasoning"]["nosql_injection"] = "MongoDB detected - NoSQL injection highly relevant"
+        analysis["confidence_scores"]["nosql_injection"] = 0.9
+    
+    if "mysql" in recon_lower or "postgresql" in recon_lower or "sql" in recon_lower:
+        analysis["detected_technologies"].append("SQL Database")
+        analysis["recommended_attacks"].append("sql_injection")
+        analysis["reasoning"]["sql_injection"] = "SQL database detected - SQL injection should be tested"
+        analysis["confidence_scores"]["sql_injection"] = 0.85
+    
+    # Framework detection
+    if "node" in recon_lower or "express" in recon_lower:
+        analysis["detected_technologies"].append("Node.js")
+        analysis["recommended_attacks"].append("command_injection")
+        analysis["reasoning"]["command_injection"] = "Node.js detected - command injection possible via child_process"
+        analysis["confidence_scores"]["command_injection"] = 0.6
+    
+    if "php" in recon_lower:
+        analysis["detected_technologies"].append("PHP")
+        if "command_injection" not in analysis["recommended_attacks"]:
+            analysis["recommended_attacks"].append("command_injection")
+        analysis["reasoning"]["command_injection"] = "PHP detected - command injection via exec/system functions"
+        analysis["confidence_scores"]["command_injection"] = 0.7
+    
+    # API detection
+    if "api" in recon_lower or "json" in recon_lower or "rest" in recon_lower:
+        analysis["endpoint_type"] = "API"
+        if "xss" not in analysis["recommended_attacks"]:
+            analysis["recommended_attacks"].append("xss")
+        analysis["reasoning"]["xss"] = "JSON API - XSS possible if data is rendered in frontend"
+        analysis["confidence_scores"]["xss"] = 0.5
+        
+        if "ssrf" not in analysis["recommended_attacks"]:
+            analysis["recommended_attacks"].append("ssrf")
+        analysis["reasoning"]["ssrf"] = "API endpoint - SSRF possible via URL parameters"
+        analysis["confidence_scores"]["ssrf"] = 0.65
+    
+    # File operations
+    if "file" in recon_lower or "upload" in recon_lower or "download" in recon_lower:
+        analysis["recommended_attacks"].append("path_traversal")
+        analysis["reasoning"]["path_traversal"] = "File operations detected - path traversal likely"
+        analysis["confidence_scores"]["path_traversal"] = 0.8
+    
+    # XML detection
+    if "xml" in recon_lower or "soap" in recon_lower:
+        analysis["detected_technologies"].append("XML")
+        analysis["recommended_attacks"].append("xxe")
+        analysis["reasoning"]["xxe"] = "XML processing detected - XXE injection possible"
+        analysis["confidence_scores"]["xxe"] = 0.75
+    
+    # LDAP detection
+    if "ldap" in recon_lower or "active directory" in recon_lower or "ad" in recon_lower:
+        analysis["detected_technologies"].append("LDAP")
+        analysis["recommended_attacks"].append("ldap_injection")
+        analysis["reasoning"]["ldap_injection"] = "LDAP/AD detected - LDAP injection should be tested"
+        analysis["confidence_scores"]["ldap_injection"] = 0.8
+    
+    # WAF detection
+    if "cloudflare" in recon_lower:
+        analysis["detected_waf"] = "Cloudflare"
+    elif "aws" in recon_lower or "waf" in recon_lower:
+        analysis["detected_waf"] = "AWS WAF"
+    elif "akamai" in recon_lower:
+        analysis["detected_waf"] = "Akamai"
+    
+    # If no specific attacks recommended, suggest comprehensive scan
+    if not analysis["recommended_attacks"]:
+        analysis["recommended_attacks"] = ["sql_injection", "xss", "command_injection"]
+        analysis["reasoning"]["default"] = "No specific technologies detected - testing common attack vectors"
+    
+    # Sort by confidence score
+    analysis["recommended_attacks"].sort(
+        key=lambda x: analysis["confidence_scores"].get(x, 0.5),
+        reverse=True
+    )
+    
+    # Generate execution plan
+    for i, attack_type in enumerate(analysis["recommended_attacks"], 1):
+        confidence = analysis["confidence_scores"].get(attack_type, 0.5)
+        priority = "HIGH" if confidence >= 0.7 else "MEDIUM" if confidence >= 0.5 else "LOW"
+        
+        analysis["execution_plan"].append({
+            "step": i,
+            "attack_type": attack_type,
+            "priority": priority,
+            "confidence": confidence,
+            "reasoning": analysis["reasoning"].get(attack_type, "General testing"),
+            "recommended_payload_count": 10 if confidence >= 0.7 else 5
+        })
+    
+    # Auto-execute if requested
+    if auto_execute and analysis["recommended_attacks"]:
+        print(f"[*] Auto-executing recommended attacks...")
+        
+        scan_results = comprehensive_waf_scan(
+            target_url=target_url,
+            attack_types=analysis["recommended_attacks"],
+            payloads_per_attack=10
+        )
+        
+        analysis["scan_results"] = scan_results
+        analysis["auto_executed"] = True
+    else:
+        analysis["auto_executed"] = False
+    
+    return analysis
+
+
 @mcp.resource("payload-library://attack-templates")
 def get_attack_templates() -> str:
     """Returns attack payload templates for different scenarios."""
