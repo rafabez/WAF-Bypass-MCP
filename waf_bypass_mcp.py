@@ -67,6 +67,13 @@ def generate_attack_payloads(
         - recommendations: Usage tips
     """
     
+    # Get the AI generation prompt to guide payload creation
+    generation_prompt = generator.get_generation_prompt(
+        attack_type=attack_type,
+        technique=technique,
+        context=target_context
+    )
+    
     payloads = generator.generate_payloads(
         attack_type=attack_type,
         technique=technique,
@@ -78,6 +85,7 @@ def generate_attack_payloads(
         "attack_type": attack_type,
         "technique": technique,
         "target_context": target_context,
+        "ai_generation_prompt": generation_prompt,  # ✅ PROMPT INCLUÍDO!
         "payload_count": len(payloads),
         "payloads": payloads,
         "recommendations": generator.get_recommendations(attack_type, technique)
@@ -206,6 +214,14 @@ def adapt_failed_payload(
         - confidence: Confidence score for success
     """
     
+    # Get the adaptation prompt to guide AI assistant
+    adaptation_prompt = learner.get_adaptation_prompt(
+        payload=original_payload,
+        waf_response=waf_response,
+        attack_type=attack_type,
+        count=improvement_count
+    )
+    
     improvements = learner.adapt_payload(
         payload=original_payload,
         waf_response=waf_response,
@@ -213,6 +229,9 @@ def adapt_failed_payload(
         block_reason=block_reason,
         count=improvement_count
     )
+    
+    # Include the prompt in the response
+    improvements["ai_adaptation_prompt"] = adaptation_prompt
     
     return improvements
 

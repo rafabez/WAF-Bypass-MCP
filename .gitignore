@@ -56,3 +56,4 @@ test_results/
 # Internal analysis files (not for public repo)
 FEATURE_VERIFICATION.md
 README_IMPROVEMENTS.md
+INSPIRATION_VS_IMPLEMENTATION.md

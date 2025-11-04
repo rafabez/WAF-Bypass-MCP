@@ -4,6 +4,16 @@ Learns from blocked payloads and generates improved variants.
 
 This is the core innovation from the research - using AI to adapt payloads
 based on WAF responses and detection patterns.
+
+Based on research: "How I Made ChatGPT My Personal Hacking Assistant and Broke Their AI-Powered Security"
+by esakkiammal-v (https://infosecwriteups.com/)
+
+System Prompt for AI Assistant:
+"You are a WAF evasion expert specializing in AI security systems. Analyze detection 
+patterns and create improved payloads."
+
+Temperature: 0.8 (for creative but focused adaptations)
+Max Tokens: 800
 """
 
 from typing import Dict, Any, List, Optional
@@ -23,6 +33,7 @@ class AdaptiveLearner:
         self.learning_history = []
         self.successful_adaptations = []
         self.common_blocks = self._load_common_blocks()
+        self.adaptation_prompt_template = self._load_adaptation_prompt()
     
     def _load_common_blocks(self) -> Dict[str, List[str]]:
         """Load common blocking patterns and their evasion techniques."""
@@ -73,6 +84,56 @@ class AdaptiveLearner:
                 ]
             }
         }
+    
+    def _load_adaptation_prompt(self) -> str:
+        """
+        Load the AI adaptation prompt template from the original research.
+        This prompt guides the AI assistant in analyzing blocks and generating improvements.
+        """
+        return """
+        The AI WAF blocked this payload: {original_payload}
+        Context: {blocked_response}
+        
+        Analyze why it was detected and create improved versions that:
+        1. Maintain the same malicious intent
+        2. Use different obfuscation techniques
+        3. Avoid the detected patterns
+        4. Blend with normal application traffic
+        5. Exploit potential gaps in semantic analysis
+        
+        Provide {count} alternative payloads with explanations of the evasion technique used.
+        
+        Consider these evasion strategies:
+        - Encoding variations (URL, Unicode, hex, base64)
+        - Comment insertion to break patterns
+        - Case manipulation
+        - Whitespace and newline tricks
+        - Alternative syntax that achieves same goal
+        - Context-appropriate disguises
+        
+        For each improved payload, explain:
+        - What pattern was detected in the original
+        - How the new payload avoids detection
+        - What technique is being used
+        - Confidence level (0.0-1.0) for bypass success
+        """
+    
+    def get_adaptation_prompt(
+        self,
+        payload: str,
+        waf_response: str,
+        attack_type: str,
+        count: int = 3
+    ) -> str:
+        """
+        Get the formatted adaptation prompt for AI assistant.
+        This allows the AI to generate improved payloads based on the research methodology.
+        """
+        return self.adaptation_prompt_template.format(
+            original_payload=payload,
+            blocked_response=waf_response,
+            count=count
+        )
     
     def adapt_payload(
         self,
