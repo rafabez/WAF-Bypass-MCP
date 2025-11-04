@@ -161,29 +161,14 @@ pip install -r requirements.txt
 
 **Note**: This tool is currently in private development for internal lab use by InterzoneSec.
 
-#### For Windsurf/Cascade
+Add the following configuration to your MCP client:
 
-1. Open Settings → MCP Servers (or edit `~/.config/windsurf/mcp_config.json`)
-2. Add the following configuration:
+**Configuration file locations:**
+- **Windsurf/Cascade**: `~/.config/windsurf/mcp_config.json` or Settings → MCP Servers
+- **Cursor IDE**: `~/.cursor/mcp_config.json` or Settings (Cmd/Ctrl + ,) → MCP
+- **VS Code**: `~/.vscode/mcp_settings.json` or through Settings UI (requires MCP extension)
 
-```json
-{
-  "mcpServers": {
-    "waf-bypass-mcp": {
-      "command": "/absolute/path/to/WAF-Bypass-MCP/venv/bin/python",
-      "args": ["/absolute/path/to/WAF-Bypass-MCP/waf_bypass_mcp.py"]
-    }
-  }
-}
-```
-
-3. Restart the IDE
-
-#### For Cursor IDE
-
-1. Open Settings (Cmd/Ctrl + ,)
-2. Search for "MCP" or edit `~/.cursor/mcp_config.json`
-3. Add the configuration:
+**Configuration (same for all IDEs):**
 
 ```json
 {
@@ -196,26 +181,7 @@ pip install -r requirements.txt
 }
 ```
 
-4. Restart Cursor
-
-#### For VS Code (with Cline/MCP Extension)
-
-1. Install the MCP extension for VS Code
-2. Edit settings: `~/.vscode/mcp_settings.json` or through VS Code settings UI
-3. Add the configuration:
-
-```json
-{
-  "mcpServers": {
-    "waf-bypass-mcp": {
-      "command": "/absolute/path/to/WAF-Bypass-MCP/venv/bin/python",
-      "args": ["/absolute/path/to/WAF-Bypass-MCP/waf_bypass_mcp.py"]
-    }
-  }
-}
-```
-
-4. Reload VS Code
+**After adding configuration:** Restart your IDE
 
 #### Configuration Notes
 
