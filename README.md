@@ -71,7 +71,7 @@ WAF Bypass MCP uses **AI-native techniques** to:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Windsurf IDE / MCP Client             │
+│                    IDE / MCP Client             │
 │                     (User Interface)                     │
 └────────────────────┬────────────────────────────────────┘
                      │
